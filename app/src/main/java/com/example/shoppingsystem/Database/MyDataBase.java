@@ -1,10 +1,14 @@
 package com.example.shoppingsystem.Database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
+
+import com.example.shoppingsystem.Model.ProductModel;
 
 public class MyDataBase extends SQLiteOpenHelper {
     final static String dataName = "shoppingsystem";
@@ -42,5 +46,34 @@ public class MyDataBase extends SQLiteOpenHelper {
 
     public int getProductSelected(String prodName) {
         return 0;
+    }
+    public String getCatId(String name ){
+        sqLiteDatabase=getReadableDatabase();
+        String[]args={name};
+        Cursor cursor=sqLiteDatabase.rawQuery("select id from category where name =?",args);
+        if (cursor.getCount()>0) {
+            cursor.moveToFirst();
+            sqLiteDatabase.close();
+            return cursor.getString(0);
+        }
+        sqLiteDatabase.close();
+        cursor.close();
+        return null;
+    }
+    public String  insertProduct(ProductModel product){
+        sqLiteDatabase=getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put("name",product.getProName());
+        values.put("image",product.getProImage());
+        values.put("price",product.getPrice());
+        values.put("quantity",product.getPro_quantity());
+        values.put("cate_id",product.getCatId());
+        values.put("quantitySelected",0);
+        long re=sqLiteDatabase.insert("product",null,values);
+        sqLiteDatabase.close();
+        if(re==-1)
+            return "error quantitySelected";
+        else
+            return "inserted quantitySelected";
     }
 }

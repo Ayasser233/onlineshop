@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_intro3"
-    tools:context=".activity.activity_Addproduct">
-
+    tools:context=".activity.addproduct">
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/g1"
         android:layout_width="match_parent"
@@ -84,6 +83,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:minHeight="48dp"
         android:padding="10dp"
         app:layout_constraintBaseline_toBaselineOf="@+id/cate_title"
         app:layout_constraintEnd_toEndOf="parent"
@@ -125,9 +125,9 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
         android:layout_marginTop="20dp"
-        android:text="Update"
         android:background="@android:color/holo_green_dark"
-        android:textColor="@android:color/white"
+        android:text="Update"
+        android:textColor="#212121"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_upload" />
 
@@ -138,7 +138,7 @@
         android:layout_marginTop="20dp"
         android:background="@android:color/holo_orange_dark"
         android:text="Delete"
-        android:textColor="@android:color/white"
+        android:textColor="#4E342E"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.212"
@@ -162,7 +162,7 @@
     <Button
         android:id="@+id/generate"
         android:layout_width="99dp"
-        android:layout_height="37dp"
+        android:layout_height="48dp"
         android:layout_marginStart="76dp"
         android:layout_marginTop="208dp"
         android:layout_marginEnd="56dp"
@@ -173,6 +173,8 @@
 
         app:layout_constraintStart_toEndOf="@+id/id_for_update_del"
         app:layout_constraintTop_toTopOf="parent" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
