@@ -13,25 +13,25 @@ import com.example.shoppingsystem.Model.ProductModel;
 
 public class MyDataBase extends SQLiteOpenHelper {
     final static String dataName = "shoppingsystem";
-    SQLiteDatabase sqLiteDatabase;
+    SQLiteDatabase data;
     public MyDataBase(@Nullable Context context) {
         super(context, dataName, null, 3);
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        sqLiteDatabase.execSQL("create table customer (id INTEGER primary key AUTOINCREMENT,username TEXT,email TEXT unique,password TEXT,birthdate TEXT)");
+        db.execSQL("create table customer (id INTEGER primary key AUTOINCREMENT,username TEXT,email TEXT unique,password TEXT,birthdate TEXT)");
 
-        sqLiteDatabase.execSQL("create table category (id integer primary key  autoincrement , name text not null , count integer )");
+        db.execSQL("create table category (id integer primary key  autoincrement , name text not null , count integer )");
 
-        sqLiteDatabase.execSQL("create table rating (id integer primary key  autoincrement , ratenum REAL, nametxt text )");
+        db.execSQL("create table rating (id integer primary key  autoincrement , ratenum REAL, nametxt text )");
 
-        sqLiteDatabase.execSQL("create table product (id integer primary key autoincrement, name text not null ,image blob ," +
+        db.execSQL("create table product (id integer primary key autoincrement, name text not null ,image blob ," +
                 "price real not null , quantity integer not null , quantitySelected integer not null , category_id integer not null ," +
                 "foreign key (category_id)references category (id))");
 
-        sqLiteDatabase.execSQL("create table transactions (id integer primary key  autoincrement , customername text, productname text , catgoryname text ,image blob ,date TEXT ,price real ,quantity integer) ");
+        db.execSQL("create table transactions (id integer primary key  autoincrement , customername text, productname text , catgoryname text ,image blob ,date TEXT ,price real ,quantity integer) ");
 
-        sqLiteDatabase.execSQL("create table cost (id integer primary key  autoincrement , costproducts REAL)");
+        db.execSQL("create table cost (id integer primary key  autoincrement , costproducts REAL)");
     }
 
     @Override
@@ -49,44 +49,44 @@ public class MyDataBase extends SQLiteOpenHelper {
         return 0;
     }
     public String getCatId(String name ){
-        sqLiteDatabase=getReadableDatabase();
+        data=getReadableDatabase();
         String[]args={name};
-        Cursor cursor=sqLiteDatabase.rawQuery("select id from category where name =?",args);
+        Cursor cursor=data.rawQuery("select id from category where name =?",args);
         if (cursor.getCount()>0) {
             cursor.moveToFirst();
-            sqLiteDatabase.close();
+            data.close();
             return cursor.getString(0);
         }
-        sqLiteDatabase.close();
+        data.close();
         cursor.close();
         return null;
     }
     public Cursor getCategory(){
-        sqLiteDatabase=getReadableDatabase();
+        data=getReadableDatabase();
         String []fields={"id","name","count"};
-        Cursor cursor= sqLiteDatabase.query("category",fields,null,null,null,null,null);
+        Cursor cursor= data.query("category",fields,null,null,null,null,null);
         if (cursor.getCount()>0)
             cursor.moveToFirst();
-        sqLiteDatabase.close();
+        data.close();
         return cursor;
     }
     public void insertCategory(CategoryModel cate, int count){
-        sqLiteDatabase=getWritableDatabase();
+        data=getWritableDatabase();
         ContentValues values=new ContentValues();
         values.put("name",cate.getCat_name());
         values.put("count",count);
-        sqLiteDatabase.insert("category",null,values);
-        sqLiteDatabase.close();
+        data.insert("category",null,values);
+        data.close();
     }
     public void insertCost(float cost){
-        sqLiteDatabase=getWritableDatabase();
+        data=getWritableDatabase();
         ContentValues values=new ContentValues();
         values.put("costproducts",cost);
-        sqLiteDatabase.insert("cost",null,values);
-        sqLiteDatabase.close();
+        data.insert("cost",null,values);
+        data.close();
     }
-    public String  insertProduct(ProductModel product){
-        sqLiteDatabase=getWritableDatabase();
+    public String insertProduct(ProductModel product){
+        data=getWritableDatabase();
         ContentValues values=new ContentValues();
         values.put("name",product.getProName());
         values.put("image",product.getProImage());
@@ -94,8 +94,8 @@ public class MyDataBase extends SQLiteOpenHelper {
         values.put("quantity",product.getPro_quantity());
         values.put("cate_id",product.getCatId());
         values.put("quantitySelected",0);
-        long re=sqLiteDatabase.insert("product",null,values);
-        sqLiteDatabase.close();
+        long re=data.insert("product",null,values);
+        data.close();
         if(re==-1)
             return "error quantitySelected";
         else

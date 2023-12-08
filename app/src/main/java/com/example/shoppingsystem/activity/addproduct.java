@@ -13,25 +13,16 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
-
 import com.example.shoppingsystem.Database.MyDataBase;
 import com.example.shoppingsystem.Model.CategoryModel;
 import com.example.shoppingsystem.Model.ProductModel;
 import com.example.shoppingsystem.R;
-
-
-
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.shoppingsystem.R;
-
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,40 +52,21 @@ public class addproduct extends AppCompatActivity {
         if(str1.equals("hiddin2")){
             addCategory.setText("");
         }
-        addCategory.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!str1.equals("hiddin2")){
-                    addCategory();
-                }
-                SharedPreferences preferences=getSharedPreferences("addCategory1",MODE_PRIVATE);
-                SharedPreferences.Editor editor=preferences.edit();
-                editor.putString("add1","hiddin2");
-                editor.apply();
-                addCategory.setText("");
+        addCategory.setOnClickListener(view -> {
+            if(!str1.equals("hiddin2")){
+                addCategory();
             }
+            SharedPreferences preferences1 =getSharedPreferences("addCategory1",MODE_PRIVATE);
+            SharedPreferences.Editor editor= preferences1.edit();
+            editor.putString("add1","hiddin2");
+            editor.apply();
+            addCategory.setText("");
         });
         getAllcategory();
 
-        reset_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Reset();
-            }
-
-        });
-        productimage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chooseImage();
-            }
-        });
-        upload_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addProduct();
-            }
-        });
+        reset_btn.setOnClickListener(v -> Reset());
+        productimage.setOnClickListener(v -> chooseImage());
+        upload_btn.setOnClickListener(v -> addProduct());
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -105,6 +77,7 @@ public class addproduct extends AppCompatActivity {
         database.insertCategory(new CategoryModel("Women"),0);
         database.insertCategory(new CategoryModel("Men"),0);
         database.insertCategory(new CategoryModel("Children"),0);
+        database.insertCategory(new CategoryModel("cats"),0);
         database.insertCost(0);
     }
 
@@ -151,8 +124,7 @@ public class addproduct extends AppCompatActivity {
         Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-        return byteArray;
+        return stream.toByteArray();
     }
     public void Reset(){
         productimage.setImageResource(R.drawable.proimg);
