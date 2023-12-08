@@ -19,15 +19,15 @@ public class MyDataBase extends SQLiteOpenHelper {
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table customer (id INTEGER primary key AUTOINCREMENT,username TEXT,email TEXT unique,password TEXT,birthdate TEXT)");
+        db.execSQL("create table customer (id INTEGER primary key AUTOINCREMENT,username TEXT,email TEXT,password TEXT,birthdate TEXT)");
 
         db.execSQL("create table category (id integer primary key  autoincrement , name text not null , count integer )");
 
         db.execSQL("create table rating (id integer primary key  autoincrement , ratenum REAL, nametxt text )");
 
         db.execSQL("create table product (id integer primary key autoincrement, name text not null ,image blob ," +
-                "price real not null , quantity integer not null , quantitySelected integer not null , category_id integer not null ," +
-                "foreign key (category_id)references category (id))");
+                "price real not null , quantity integer not null , quantitySelected integer not null , cate_id integer not null ," +
+                "foreign key (cate_id)references category (id))");
 
         db.execSQL("create table transactions (id integer primary key  autoincrement , customername text, productname text , catgoryname text ,image blob ,date TEXT ,price real ,quantity integer) ");
 
@@ -46,7 +46,12 @@ public class MyDataBase extends SQLiteOpenHelper {
     }
 
     public int getProductSelected(String prodName) {
-        return 0;
+        data=getReadableDatabase();
+        String[] arg={prodName};
+        Cursor cursor=data.rawQuery("Select quantitySelected from product where name like ?",arg);
+        cursor.moveToFirst();
+        data.close();
+        return cursor.getInt(0);
     }
     public String getCatId(String name ){
         data=getReadableDatabase();
@@ -78,6 +83,7 @@ public class MyDataBase extends SQLiteOpenHelper {
         data.insert("category",null,values);
         data.close();
     }
+
     public void insertCost(float cost){
         data=getWritableDatabase();
         ContentValues values=new ContentValues();
@@ -100,5 +106,42 @@ public class MyDataBase extends SQLiteOpenHelper {
             return "error quantitySelected";
         else
             return "inserted quantitySelected";
+    }
+    public Cursor getProductById(String id){
+        data=getReadableDatabase();
+        String []args={id};
+        Cursor c=data.rawQuery("select * from product where id=?",args);
+        if(c!=null){
+            c.moveToFirst();
+        }
+        data.close();
+        return c;
+    }
+    public String delete(String id){
+        data=getWritableDatabase();
+        long re=data.delete("product","id=?",new String[]{id});
+        data.close();
+        if(re==-1)
+            return "error ";
+        else
+            return "product deleted";
+    }
+
+    public String updateProduct(ProductModel product, String id) {
+        data=getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put("name",product.getProName());
+        values.put("image",product.getProImage());
+        values.put("price",product.getPrice());
+        values.put("quantity",product.getPro_quantity());
+        values.put("cate_id",product.getCatId());
+
+       long re =data.update("product",values,"id=?",new String[]{id});
+
+        data.close();
+        if(re==-1)
+            return "error ";
+        else
+            return "product deleted";
     }
 }

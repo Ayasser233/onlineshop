@@ -10,8 +10,6 @@ public class ProductModel {
     private int pro_id;
     private int pro_quantity;
     private int catId;
-
-
     private int quantitySelected;
     private String proName;
     private byte[] proImage;

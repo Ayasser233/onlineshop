@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import com.example.shoppingsystem.Database.MyDataBase;
 import com.example.shoppingsystem.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -16,6 +17,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Button log=(Button)findViewById(R.id.btnlogin) ;
+
         log.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

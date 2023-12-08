@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ImageView;
 import com.example.shoppingsystem.Database.MyDataBase;
 import com.example.shoppingsystem.Model.CategoryModel;
@@ -23,7 +25,10 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +37,7 @@ public class addproduct extends AppCompatActivity {
     EditText productname, productprice, productquantity,idforupdateordalete;
     Spinner proCategory;
     ArrayAdapter adapter;
-    Button upload_btn,updateproduct,daleteproduct,Generate;
+    Button upload_btn,updateproduct,daleteproduct,generate;
     TextView reset_btn,addCategory;
     MyDataBase database;
     String str1;
@@ -47,7 +52,7 @@ public class addproduct extends AppCompatActivity {
 
         intiView();
 
-        SharedPreferences preferences=getSharedPreferences("addCategory1",MODE_PRIVATE);
+       /* SharedPreferences preferences=getSharedPreferences("addCategory1",MODE_PRIVATE);
         str1=preferences.getString("add1","show");
         if(str1.equals("hiddin2")){
             addCategory.setText("");
@@ -61,16 +66,38 @@ public class addproduct extends AppCompatActivity {
             editor.putString("add1","hiddin2");
             editor.apply();
             addCategory.setText("");
-        });
+        });*/
+
+
         getAllcategory();
 
         reset_btn.setOnClickListener(v -> Reset());
         productimage.setOnClickListener(v -> chooseImage());
         upload_btn.setOnClickListener(v -> addProduct());
+        generate.setOnClickListener(v -> generate());
+        daleteproduct.setOnClickListener(v -> deleteproduct());
+        updateproduct.setOnClickListener(v -> updateproduct());
 
         imagePickerLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 this::handleImagePickerResult);
+    }
+    public void generate(){
+        if(idforupdateordalete.getText().toString().replace(""," ").trim().isEmpty())
+        {
+
+            Toast.makeText(this, "Enter id to Edit or Delete", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Cursor c =database.getProductById(idforupdateordalete.getText().toString());
+            productname.setText(c.getString(1));
+            productquantity.setText(c.getInt(4));
+            productprice.setText(c.getFloat(3)+"");
+            InputStream images=new ByteArrayInputStream(c.getBlob(2));
+            Bitmap bitmap= BitmapFactory.decodeStream(images);
+            productimage.setImageBitmap(bitmap);
+        }
+
     }
 
     protected void addCategory(){
@@ -100,9 +127,9 @@ public class addproduct extends AppCompatActivity {
     }
     public void addProduct()
     {
-      String name=productname.getText().toString().trim(),
-              price=productprice.getText().toString().trim(),
-              quantity=productquantity.getText().toString().trim();
+      String name=productname.getText().toString(),
+              price=productprice.getText().toString(),
+              quantity=productquantity.getText().toString();
       int CategoryId=Integer.parseInt(database.getCatId(proCategory.getSelectedItem().toString()));
       byte []image=imageViewToByte(productimage);
 
@@ -113,12 +140,46 @@ public class addproduct extends AppCompatActivity {
           Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
           Reset();
           Toast.makeText(this, "Data Added", Toast.LENGTH_SHORT).show();
+
+
       }
      else{
           Toast.makeText(this, "please fill the missing data...", Toast.LENGTH_SHORT).show();
      }
     }
+    public void updateproduct(){
 
+        String name=productname.getText().toString();
+        String price=productprice.getText().toString();
+        String quan=productquantity.getText().toString();
+
+        int catid=Integer.parseInt(database.getCatId(proCategory.getSelectedItem().toString()));
+        byte [] image=imageViewToByte(productimage);
+        if(!idforupdateordalete.getText().toString().isEmpty()) {
+            if (!name.isEmpty() && !price.isEmpty() && !quan.isEmpty() && !proCategory.getSelectedItem().toString().isEmpty() && image.length != 0) {
+                ProductModel productModel = new ProductModel(getApplicationContext(), Integer.parseInt(quan), catid, name, image, Double.parseDouble(price));
+                String str = database.updateProduct(productModel, idforupdateordalete.getText().toString());
+                Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+                Reset();
+            } else {
+                Toast.makeText(this, "please fill the missing data...", Toast.LENGTH_SHORT).show();
+            }
+        }else
+        {
+            Toast.makeText(this, "Enter id to Edit ", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public void deleteproduct(){
+        if(idforupdateordalete.getText().toString().replace(""," ").trim().isEmpty())
+        {
+
+            Toast.makeText(this, "Enter id to Edit or Delete", Toast.LENGTH_SHORT).show();
+        }else {
+            String str = database.delete(idforupdateordalete.getText().toString());
+            Toast.makeText(this, str, Toast.LENGTH_LONG).show();
+        }
+        Reset();
+    }
 
     protected static byte[] imageViewToByte(ImageView image) {
         Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
@@ -158,7 +219,7 @@ public class addproduct extends AppCompatActivity {
         idforupdateordalete=(EditText) findViewById(R.id.id_for_update_del);
         reset_btn =(TextView) findViewById(R.id.reset);
         addCategory=(TextView) findViewById(R.id.addCategory);
-        Generate=(Button)findViewById(R.id.generate);
+        generate=(Button)findViewById(R.id.generate);
         database = new MyDataBase(this);
     }
 }
