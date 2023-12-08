@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
 
+import com.example.shoppingsystem.Model.CategoryModel;
 import com.example.shoppingsystem.Model.ProductModel;
 
 public class MyDataBase extends SQLiteOpenHelper {
@@ -59,6 +60,30 @@ public class MyDataBase extends SQLiteOpenHelper {
         sqLiteDatabase.close();
         cursor.close();
         return null;
+    }
+    public Cursor getCategory(){
+        sqLiteDatabase=getReadableDatabase();
+        String []fields={"id","name","count"};
+        Cursor cursor= sqLiteDatabase.query("category",fields,null,null,null,null,null);
+        if (cursor.getCount()>0)
+            cursor.moveToFirst();
+        sqLiteDatabase.close();
+        return cursor;
+    }
+    public void insertCategory(CategoryModel cate, int count){
+        sqLiteDatabase=getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put("name",cate.getCat_name());
+        values.put("count",count);
+        sqLiteDatabase.insert("category",null,values);
+        sqLiteDatabase.close();
+    }
+    public void insertCost(float cost){
+        sqLiteDatabase=getWritableDatabase();
+        ContentValues values=new ContentValues();
+        values.put("costproducts",cost);
+        sqLiteDatabase.insert("cost",null,values);
+        sqLiteDatabase.close();
     }
     public String  insertProduct(ProductModel product){
         sqLiteDatabase=getWritableDatabase();
