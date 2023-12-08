@@ -3,6 +3,7 @@ package com.example.shoppingsystem.activity;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,7 +14,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import com.example.shoppingsystem.Database.MyDataBase;
 import com.example.shoppingsystem.Model.CategoryModel;
@@ -82,6 +84,40 @@ public class addproduct extends AppCompatActivity {
                 new ActivityResultContracts.StartActivityForResult(),
                 this::handleImagePickerResult);
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.admin_menu_1,menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        if (item.getItemId() == R.id.feedback) {
+            Intent i1 = new Intent(this, activity_rating.class);
+            startActivity(i1);
+            return true;
+        }
+        else if (item.getItemId() == R.id.report) {
+            Intent i2 = new Intent(this, activity_reportgenerated.class);
+            startActivity(i2);
+            return true;
+        }
+        else if (item.getItemId() == R.id.chart) {
+            Intent i3 = new Intent(this, activity_charts.class);
+            startActivity(i3);
+            return true;
+        }
+        else
+            return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public boolean onSupportNavigateUp() {
+        //onBackPressed();
+        Intent intent=new Intent(this,start.class);
+        startActivity(intent);
+        return super.onSupportNavigateUp();
+    }
+
     public void generate(){
         if(idforupdateordalete.getText().toString().replace(""," ").trim().isEmpty())
         {
