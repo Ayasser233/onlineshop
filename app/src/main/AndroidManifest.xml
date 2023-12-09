@@ -17,6 +17,9 @@
         android:theme="@style/Theme.Shoppingsystem"
         tools:targetApi="31">
         <activity
+            android:name=".activity.start"
+            android:exported="false" />
+        <activity
             android:name=".activity.activity_charts"
             android:exported="false" />
         <activity
