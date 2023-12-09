@@ -180,13 +180,13 @@
         android:layout_marginEnd="56dp"
         android:background="@drawable/background_intro2"
         android:text="Generate"
+        app:layout_constraintBottom_toTopOf="@+id/product_name"
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintHorizontal_bias="0.379"
-
         app:layout_constraintStart_toEndOf="@+id/id_for_update_del"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

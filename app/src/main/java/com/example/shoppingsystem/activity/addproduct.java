@@ -1,8 +1,10 @@
 package com.example.shoppingsystem.activity;
 
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -13,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import com.example.shoppingsystem.Database.MyDataBase;
@@ -28,6 +31,8 @@ import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +48,7 @@ public class addproduct extends AppCompatActivity {
     String str1;
 
     private ActivityResultLauncher<Intent> imagePickerLauncher;
-    private static final int GALLERY_REQUEST_CODE = 101;
+    private static final int GALLERY_REQUEST_CODE = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,10 +83,10 @@ public class addproduct extends AppCompatActivity {
         daleteproduct.setOnClickListener(v -> deleteproduct());
         updateproduct.setOnClickListener(v -> updateproduct());
 
-        imagePickerLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                this::handleImagePickerResult);
-    }
+//        imagePickerLauncher = registerForActivityResult(
+//                new ActivityResultContracts.StartActivityForResult(),
+//                this::handleImagePickerResult);
+        }
     public void generate(){
         if(idforupdateordalete.getText().toString().replace(""," ").trim().isEmpty())
         {
@@ -91,8 +96,8 @@ public class addproduct extends AppCompatActivity {
         else{
             Cursor c =database.getProductById(idforupdateordalete.getText().toString());
             productname.setText(c.getString(1));
-            productquantity.setText(c.getInt(4));
-            productprice.setText(c.getFloat(3)+"");
+            productquantity.setText(c.getInt(4)+" ");
+            productprice.setText(c.getDouble(3)+" ");
             InputStream images=new ByteArrayInputStream(c.getBlob(2));
             Bitmap bitmap= BitmapFactory.decodeStream(images);
             productimage.setImageBitmap(bitmap);
@@ -108,22 +113,47 @@ public class addproduct extends AppCompatActivity {
         database.insertCost(0);
     }
 
-    protected void chooseImage() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        imagePickerLauncher.launch(intent);
-    }
 
-    private void handleImagePickerResult(ActivityResult result) {
-        if (result.getResultCode() == RESULT_OK) {
-            Intent data = result.getData();
-            if (data != null) {
-                Uri imageUri = data.getData();
-                // Display the image using the retrieved imageUri
-                ImageView imageView = findViewById(R.id.product_image);
-                imageView.setImageURI(imageUri);
+
+
+//    private void handleImagePickerResult(ActivityResult result) {
+//        if (result.getResultCode() == RESULT_OK) {
+//            Intent data = result.getData();
+//            if (data != null) {
+//                Uri imageUri = data.getData();
+//                // Display the image using the retrieved imageUri
+//                ImageView imageView = findViewById(R.id.product_image);
+//                imageView.setImageURI(imageUri);
+//            }
+//        }
+//    }
+        protected void chooseImage() {
+            //Create an Intent with action as ACTION_PICK
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            // Sets the type as image/*. This ensures only components of type image are selected
+            intent.setType("image/*");
+            // Launching the Intent
+            intent.setAction(Intent.ACTION_GET_CONTENT);
+            startActivityForResult(intent, GALLERY_REQUEST_CODE);
+        }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK && data != null&&data.getData()!=null) {
+
+            Uri imageFilePath = data.getData();
+            Bitmap imageToStore;
+            try {
+               imageToStore= MediaStore.Images.Media.getBitmap(getContentResolver(),imageFilePath);
+               productimage.setImageBitmap(imageToStore);
+
+            } catch (IOException e) {
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         }
+
+
     }
     public void addProduct()
     {
@@ -137,14 +167,13 @@ public class addproduct extends AppCompatActivity {
       {
           ProductModel productmodel=new ProductModel(getApplicationContext(),Integer.parseInt(quantity),CategoryId,name,image,Double.parseDouble(price));
           String msg=database.insertProduct(productmodel);
-          Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+          Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
           Reset();
-          Toast.makeText(this, "Data Added", Toast.LENGTH_SHORT).show();
-
-
+          Toast.makeText(this, ""+image, Toast.LENGTH_LONG).show();
       }
-     else{
-          Toast.makeText(this, "please fill the missing data...", Toast.LENGTH_SHORT).show();
+     else
+     {
+          Toast.makeText(this, "please fill the missing data...", Toast.LENGTH_LONG).show();
      }
     }
     public void updateproduct(){
@@ -159,10 +188,10 @@ public class addproduct extends AppCompatActivity {
             if (!name.isEmpty() && !price.isEmpty() && !quan.isEmpty() && !proCategory.getSelectedItem().toString().isEmpty() && image.length != 0) {
                 ProductModel productModel = new ProductModel(getApplicationContext(), Integer.parseInt(quan), catid, name, image, Double.parseDouble(price));
                 String str = database.updateProduct(productModel, idforupdateordalete.getText().toString());
-                Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, str, Toast.LENGTH_LONG).show();
                 Reset();
             } else {
-                Toast.makeText(this, "please fill the missing data...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "please fill the missing data...", Toast.LENGTH_LONG).show();
             }
         }else
         {
@@ -181,12 +210,14 @@ public class addproduct extends AppCompatActivity {
         Reset();
     }
 
-    protected static byte[] imageViewToByte(ImageView image) {
+    @NonNull
+    protected static byte[] imageViewToByte(@NonNull ImageView image) {
         Bitmap bitmap = ((BitmapDrawable) image.getDrawable()).getBitmap();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         return stream.toByteArray();
     }
+
     public void Reset(){
         productimage.setImageResource(R.drawable.proimg);
         productname.setText("");

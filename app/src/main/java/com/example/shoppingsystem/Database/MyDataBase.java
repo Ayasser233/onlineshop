@@ -14,8 +14,11 @@ import com.example.shoppingsystem.Model.ProductModel;
 public class MyDataBase extends SQLiteOpenHelper {
     final static String dataName = "shoppingsystem";
     SQLiteDatabase data;
+    Context context;
+
     public MyDataBase(@Nullable Context context) {
         super(context, dataName, null, 3);
+        this.context=context;
     }
     @Override
     public void onCreate(SQLiteDatabase db) {
